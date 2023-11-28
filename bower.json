@@ -1,0 +1,21 @@
+{
+  "name": "phaser",
+  "description": "",
+  "main": "",
+  "authors": [
+    "UpnGame"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "phaser": "^3.70.0"
+  }
+}
