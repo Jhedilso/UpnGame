@@ -55,6 +55,17 @@ class GameState extends Phaser.Scene {
         this.isJumping = false;
         this.jumpForce = 8; // Ajusta la fuerza de salto según sea necesario
         this.jumpStartY = 0;
+
+
+        // Configuración de la barra de vida
+        this.maxHealth = 100;
+        this.currentHealth = this.maxHealth;
+
+        // Crear la barra de vida
+        this.healthBar = this.add.graphics();
+
+        // Ajustar la barra de vida a la posición inicial del personaje
+        this.updateHealthBarPosition();
     }
 
     update() {
@@ -68,6 +79,8 @@ class GameState extends Phaser.Scene {
         if (this.jumpKey.isDown && !this.isJumping) {
             this.isJumping = true;
             this.jumpStartY = this.man.y;
+            // Reducir la salud al saltar
+            this.reduceHealth(10);
         }
 
         // Ajustar la posición y durante el salto
@@ -100,6 +113,67 @@ class GameState extends Phaser.Scene {
             // Si no se está moviendo, detener la animación
             this.man.anims.stop();
         }
+
+        // Ajustar la posición de la barra de vida con respecto al personaje
+        this.updateHealthBarPosition();
+
+        // Verificar si la vida llega a cero
+        if (this.currentHealth <= 0) {
+            // Mostrar pantalla de Game Over
+            this.gameOver();
+        }
     }
 
+    updateHealthBarPosition() {
+        // Ajustar la posición de la barra de vida con respecto al personaje
+        const barWidth = 100;
+        const barHeight = 20;
+        const barX = this.man.x - barWidth / 4;
+        const barY = this.man.y - 18;
+
+        this.healthBar.clear();
+        this.healthBar.fillStyle(0xff0000);
+        this.healthBar.fillRect(barX, barY, barWidth, barHeight);
+
+        const remainingWidth = (this.currentHealth / this.maxHealth) * barWidth;
+        this.healthBar.fillStyle(0x00ff00);
+        this.healthBar.fillRect(barX, barY, remainingWidth, barHeight);
+    }
+
+    reduceHealth(amount) {
+        // Reducir la salud y actualizar la barra de vida
+        this.currentHealth -= amount;
+        if (this.currentHealth < 0) {
+            this.currentHealth = 0;
+        }
+        this.updateHealthBar();
+    }
+
+    updateHealthBar() {
+        // Actualizar la visualización de la barra de vida
+        const barWidth = 100;
+        const barHeight = 10;
+        const barX = this.man.x - barWidth / 2;
+        const barY = this.man.y - 20;
+
+        this.healthBar.clear();
+        this.healthBar.fillStyle(0xff0000);
+        this.healthBar.fillRect(barX, barY, barWidth, barHeight);
+
+        const remainingWidth = (this.currentHealth / this.maxHealth) * barWidth;
+        this.healthBar.fillStyle(0x00ff00);
+        this.healthBar.fillRect(barX, barY, remainingWidth, barHeight);
+    }
+    gameOver() {
+        // Puedes personalizar la pantalla de Game Over según tus necesidades
+        this.add.text(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'Game Over', {
+            fontSize: '92px',
+            fill: '#fff'
+        }).setOrigin(0.5);
+        // Puedes reiniciar el juego o realizar otras acciones aquí
+        // Por ejemplo, reiniciar el juego después de unos segundos
+        this.time.delayedCall(3000, () => {
+            this.scene.restart();
+        });
+    }
 }
